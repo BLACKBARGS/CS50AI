@@ -8,6 +8,18 @@ HEIGHT = 8
 WIDTH = 8
 MINES = 8
 
+size = width, height = 900, 600
+
+# Icone transparente
+icon_size = (32, 32)  # Tamanho do icone
+transparent_icon = pygame.Surface(icon_size, pygame.SRCALPHA)
+transparent_icon.fill((0, 0, 0, 0))  # Preenche com cor transparente
+
+# Titulo da janela
+screen = pygame.display.set_mode(size)
+pygame.display.set_icon(transparent_icon)
+pygame.display.set_caption("BLACKBARGS")
+
 # Colors
 BLACK = (0, 0, 0)
 GRAY = (180, 180, 180)
@@ -15,7 +27,7 @@ WHITE = (255, 255, 255)
 
 # Create game
 pygame.init()
-size = width, height = 600, 400
+size = width, height = 900, 600
 screen = pygame.display.set_mode(size)
 
 # Fonts
@@ -62,16 +74,16 @@ while True:
     if instructions:
 
         # Title
-        title = largeFont.render("Play Minesweeper", True, WHITE)
+        title = largeFont.render("Campo Minado", True, WHITE)
         titleRect = title.get_rect()
         titleRect.center = ((width / 2), 50)
         screen.blit(title, titleRect)
 
         # Rules
         rules = [
-            "Click a cell to reveal it.",
-            "Right-click a cell to mark it as a mine.",
-            "Mark all mines successfully to win!"
+            "Clique em uma celula para revelar o conteudo.",
+            "Clique Direito do mouse serve para fazer uma marcacao de mina.",
+            "Marque todas minas para ganhar, tente nao se explodir!"
         ]
         for i, rule in enumerate(rules):
             line = smallFont.render(rule, True, WHITE)
@@ -81,7 +93,7 @@ while True:
 
         # Play game button
         buttonRect = pygame.Rect((width / 4), (3 / 4) * height, width / 2, 50)
-        buttonText = mediumFont.render("Play Game", True, BLACK)
+        buttonText = mediumFont.render("JOGAR", True, BLACK)
         buttonTextRect = buttonText.get_rect()
         buttonTextRect.center = buttonRect.center
         pygame.draw.rect(screen, WHITE, buttonRect)
@@ -135,7 +147,7 @@ while True:
         (2 / 3) * width + BOARD_PADDING, (1 / 3) * height - 50,
         (width / 3) - BOARD_PADDING * 2, 50
     )
-    buttonText = mediumFont.render("AI Move", True, BLACK)
+    buttonText = mediumFont.render("USAR AI", True, BLACK)
     buttonRect = buttonText.get_rect()
     buttonRect.center = aiButton.center
     pygame.draw.rect(screen, WHITE, aiButton)
@@ -146,14 +158,14 @@ while True:
         (2 / 3) * width + BOARD_PADDING, (1 / 3) * height + 20,
         (width / 3) - BOARD_PADDING * 2, 50
     )
-    buttonText = mediumFont.render("Reset", True, BLACK)
+    buttonText = mediumFont.render("RESTAURAR", True, BLACK)
     buttonRect = buttonText.get_rect()
     buttonRect.center = resetButton.center
     pygame.draw.rect(screen, WHITE, resetButton)
     screen.blit(buttonText, buttonRect)
 
     # Display text
-    text = "Lost" if lost else "Won" if game.mines == flags else ""
+    text = "Booom!" if lost else "Venceu meu nobre" if game.mines == flags else ""
     text = mediumFont.render(text, True, WHITE)
     textRect = text.get_rect()
     textRect.center = ((5 / 6) * width, (2 / 3) * height)

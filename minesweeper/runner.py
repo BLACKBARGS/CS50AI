@@ -4,60 +4,48 @@ import time
 
 from minesweeper import Minesweeper, MinesweeperAI
 
-HEIGHT = 8
-WIDTH = 8
-MINES = 8
+HEIGHT = 35
+WIDTH = 40
+MINES = 150
 
-size = width, height = 900, 600
-
-# Icone transparente
-icon_size = (32, 32)  # Tamanho do icone
+size = width, height = 1024, 600
+icon_size = (32, 32)
 transparent_icon = pygame.Surface(icon_size, pygame.SRCALPHA)
-transparent_icon.fill((0, 0, 0, 0))  # Preenche com cor transparente
-
+transparent_icon.fill((0, 0, 0, 0))
 # Titulo da janela
 screen = pygame.display.set_mode(size)
 pygame.display.set_icon(transparent_icon)
 pygame.display.set_caption("BLACKBARGS")
-
 # Colors
 BLACK = (0, 0, 0)
 GRAY = (180, 180, 180)
 WHITE = (255, 255, 255)
-
 # Create game
 pygame.init()
-size = width, height = 900, 600
 screen = pygame.display.set_mode(size)
-
 # Fonts
 OPEN_SANS = "assets/fonts/OpenSans-Regular.ttf"
-smallFont = pygame.font.Font(OPEN_SANS, 22)
-mediumFont = pygame.font.Font(OPEN_SANS, 28)
-largeFont = pygame.font.Font(OPEN_SANS, 40)
-
+smallFont = pygame.font.Font(OPEN_SANS, 15)
+mediumFont = pygame.font.Font(OPEN_SANS, 20)
+largeFont = pygame.font.Font(OPEN_SANS, 25)
 # Compute board size
-BOARD_PADDING = 20
+BOARD_PADDING = 25
 board_width = ((2 / 3) * width) - (BOARD_PADDING * 2)
 board_height = height - (BOARD_PADDING * 2)
 cell_size = int(min(board_width / WIDTH, board_height / HEIGHT))
 board_origin = (BOARD_PADDING, BOARD_PADDING)
-
 # Add images
 flag = pygame.image.load("assets/images/flag.png")
 flag = pygame.transform.scale(flag, (cell_size, cell_size))
 mine = pygame.image.load("assets/images/mine.png")
 mine = pygame.transform.scale(mine, (cell_size, cell_size))
-
 # Create game and AI agent
 game = Minesweeper(height=HEIGHT, width=WIDTH, mines=MINES)
 ai = MinesweeperAI(height=HEIGHT, width=WIDTH)
-
 # Keep track of revealed cells, flagged cells, and if a mine was hit
 revealed = set()
 flags = set()
 lost = False
-
 # Show instructions initially
 instructions = True
 
@@ -67,18 +55,14 @@ while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
-
     screen.fill(BLACK)
-
     # Show game instructions
     if instructions:
-
         # Title
         title = largeFont.render("Campo Minado", True, WHITE)
         titleRect = title.get_rect()
         titleRect.center = ((width / 2), 50)
         screen.blit(title, titleRect)
-
         # Rules
         rules = [
             "Clique em uma celula para revelar o conteudo.",
@@ -90,7 +74,6 @@ while True:
             lineRect = line.get_rect()
             lineRect.center = ((width / 2), 150 + 30 * i)
             screen.blit(line, lineRect)
-
         # Play game button
         buttonRect = pygame.Rect((width / 4), (3 / 4) * height, width / 2, 50)
         buttonText = mediumFont.render("JOGAR", True, BLACK)
@@ -98,7 +81,6 @@ while True:
         buttonTextRect.center = buttonRect.center
         pygame.draw.rect(screen, WHITE, buttonRect)
         screen.blit(buttonText, buttonTextRect)
-
         # Check if play button clicked
         click, _, _ = pygame.mouse.get_pressed()
         if click == 1:
@@ -106,16 +88,13 @@ while True:
             if buttonRect.collidepoint(mouse):
                 instructions = False
                 time.sleep(0.3)
-
         pygame.display.flip()
         continue
-
     # Draw board
     cells = []
     for i in range(HEIGHT):
         row = []
         for j in range(WIDTH):
-
             # Draw rectangle for cell
             rect = pygame.Rect(
                 board_origin[0] + j * cell_size,
@@ -124,7 +103,6 @@ while True:
             )
             pygame.draw.rect(screen, GRAY, rect)
             pygame.draw.rect(screen, WHITE, rect, 3)
-
             # Add a mine, flag, or number if needed
             if game.is_mine((i, j)) and lost:
                 screen.blit(mine, rect)
@@ -138,10 +116,8 @@ while True:
                 neighborsTextRect = neighbors.get_rect()
                 neighborsTextRect.center = rect.center
                 screen.blit(neighbors, neighborsTextRect)
-
             row.append(rect)
         cells.append(row)
-
     # AI Move button
     aiButton = pygame.Rect(
         (2 / 3) * width + BOARD_PADDING, (1 / 3) * height - 50,
@@ -152,7 +128,6 @@ while True:
     buttonRect.center = aiButton.center
     pygame.draw.rect(screen, WHITE, aiButton)
     screen.blit(buttonText, buttonRect)
-
     # Reset button
     resetButton = pygame.Rect(
         (2 / 3) * width + BOARD_PADDING, (1 / 3) * height + 20,
@@ -163,18 +138,14 @@ while True:
     buttonRect.center = resetButton.center
     pygame.draw.rect(screen, WHITE, resetButton)
     screen.blit(buttonText, buttonRect)
-
     # Display text
-    text = "Booom!" if lost else "Venceu meu nobre" if game.mines == flags else ""
+    text = "E morreu" if lost else "Venceu meu nobre" if game.mines == flags else ""
     text = mediumFont.render(text, True, WHITE)
     textRect = text.get_rect()
     textRect.center = ((5 / 6) * width, (2 / 3) * height)
     screen.blit(text, textRect)
-
     move = None
-
     left, _, right = pygame.mouse.get_pressed()
-
     # Check for a right-click to toggle flagging
     if right == 1 and not lost:
         mouse = pygame.mouse.get_pos()
@@ -186,10 +157,9 @@ while True:
                     else:
                         flags.add((i, j))
                     time.sleep(0.2)
-
+                    
     elif left == 1:
         mouse = pygame.mouse.get_pos()
-
         # If AI button clicked, make an AI move
         if aiButton.collidepoint(mouse) and not lost:
             move = ai.make_safe_move()
@@ -197,11 +167,11 @@ while True:
                 move = ai.make_random_move()
                 if move is None:
                     flags = ai.mines.copy()
-                    print("No moves left to make.")
+                    print("Sem movimentos restantes.")
                 else:
-                    print("No known safe moves, AI making random move.")
+                    print("Nenhum movimento seguro, AI fez um movimento aleatorio.")
             else:
-                print("AI making safe move.")
+                print("AI fez um movimento seguro.")
             time.sleep(0.2)
 
         # Reset game state

@@ -1,15 +1,15 @@
-class Sentence():
+class Sentence:
 
     def evaluate(self, model):
-        """Evaluates the logical sentence."""
+        # Evaluates the logical sentence.
         raise Exception("nothing to evaluate")
 
     def formula(self):
-        """Returns string formula representing logical sentence."""
+        # Returns string formula representing logical sentence.
         return ""
 
     def symbols(self):
-        """Returns a set of all symbols in the logical sentence."""
+        # Returns a set of all symbols in the logical sentence."""
         return set()
 
     @classmethod
@@ -19,9 +19,9 @@ class Sentence():
 
     @classmethod
     def parenthesize(cls, s):
-        """Parenthesizes an expression if not already parenthesized."""
+        # Parenthesizes an expression if not already parenthesized.
         def balanced(s):
-            """Checks if a string has balanced parentheses."""
+            # Checks if a string has balanced parentheses.
             count = 0
             for c in s:
                 if c == "(":
@@ -223,38 +223,30 @@ class Biconditional(Sentence):
 
 
 def model_check(knowledge, query):
-    """Checks if knowledge base entails query."""
+    # Checks if knowledge base entails query."""
 
     def check_all(knowledge, query, symbols, model):
-        """Checks if knowledge base entails query, given a particular model."""
-
+        # Checks if knowledge base entails query, given a particular model.
         # If model has an assignment for each symbol
         if not symbols:
-
             # If knowledge base is true in model, then query must also be true
             if knowledge.evaluate(model):
                 return query.evaluate(model)
             return True
         else:
-
             # Choose one of the remaining unused symbols
             remaining = symbols.copy()
             p = remaining.pop()
-
             # Create a model where the symbol is true
             model_true = model.copy()
             model_true[p] = True
-
             # Create a model where the symbol is false
             model_false = model.copy()
             model_false[p] = False
-
             # Ensure entailment holds in both models
             return (check_all(knowledge, query, remaining, model_true) and
                     check_all(knowledge, query, remaining, model_false))
-
     # Get all symbols in both knowledge and query
     symbols = set.union(knowledge.symbols(), query.symbols())
-
     # Check that knowledge entails query
     return check_all(knowledge, query, symbols, dict())

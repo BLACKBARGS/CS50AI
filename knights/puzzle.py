@@ -59,8 +59,8 @@ knowledge2 = And(
 # B says "C is a knave."
 # C says "A is a knight."
 knowledge3 = And(
-    Not(And(AKnight, AKnave)),  # A cannot be knight and knave at the same time
-    Or(AKnight, AKnave),        # A will be Knight or Knave
+    Not(And(AKnight, AKnave)),  # I cannot be knight and knave at the same time
+    Or(AKnight, AKnave),        # I will be Knight or Knave
 
     Not(And(BKnight, BKnave)),  # B cannot be knight and knave at the same time
     Or(BKnight, BKnave),        # B will be Knight or Knave

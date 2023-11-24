@@ -4,6 +4,11 @@ import os
 import sys
 import tensorflow as tf
 
+import os
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+import tensorflow as tf
+
+
 from sklearn.model_selection import train_test_split
 
 EPOCHS = 10
@@ -27,6 +32,8 @@ def main():
     x_train, x_test, y_train, y_test = train_test_split(
         np.array(images), np.array(labels), test_size=TEST_SIZE
     )
+
+    x_train, x_test = x_train / 255.0, x_test / 255.0
 
     # Get a compiled neural network
     model = get_model()
@@ -58,7 +65,21 @@ def load_data(data_dir):
     be a list of integer labels, representing the categories for each of the
     corresponding `images`.
     """
-    raise NotImplementedError
+
+    images = []
+    labels = []
+
+    # iterate through data set directories
+    for directory in os.listdir(data_dir):
+        # iterate through single image files
+        print(f"Started loading files from {directory} directory")
+        for file in os.listdir(os.path.join(data_dir, directory)):
+            image = cv2.imread(os.path.join(data_dir, directory, file))
+            resized = cv2.resize(image, (IMG_WIDTH, IMG_HEIGHT))
+            images.append(resized)
+            labels.append(int(directory))
+        print(f"Ended loading files from {directory} directory")
+    return images, labels
 
 
 def get_model():
@@ -67,8 +88,44 @@ def get_model():
     `input_shape` of the first layer is `(IMG_WIDTH, IMG_HEIGHT, 3)`.
     The output layer should have `NUM_CATEGORIES` units, one for each category.
     """
-    raise NotImplementedError
+    model = tf.keras.models.Sequential([
+        # Convolutional layer. Learn 32 filters using a 3x3 kernel
+        tf.keras.layers.Conv2D(
+            32, (3, 3), activation="relu", input_shape=(IMG_WIDTH, IMG_HEIGHT, 3)
+        ),
+
+        # Max-pooling layer, using 2x2 pool size
+        tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+
+        tf.keras.layers.Conv2D(
+            32, (3, 3), activation="relu", input_shape=(IMG_WIDTH, IMG_HEIGHT, 3)
+        ),
+
+        # Max-pooling layer, using 2x2 pool size
+        tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+
+        # Flatten units
+        tf.keras.layers.Flatten(),
+
+        # Add a hidden layer with dropout
+        tf.keras.layers.Dense(128, activation="relu"),
+        tf.keras.layers.Dropout(0.5),
+
+        # Add an output layer with output units for all 10 digits
+        tf.keras.layers.Dense(NUM_CATEGORIES, activation="softmax")
+    ])
+
+    model.compile(
+        optimizer="adam",
+        loss="categorical_crossentropy",
+        metrics=["accuracy"]
+    )
+
+    model.summary()
+
+    return model
 
 
 if __name__ == "__main__":
     main()
+    
